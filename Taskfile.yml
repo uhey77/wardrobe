@@ -1,0 +1,83 @@
+version: "3"
+
+env:
+  UV_CACHE_DIR: .uv-cache
+
+tasks:
+  setup:
+    desc: Python仮想環境とフロントエンド依存関係をインストールする
+    cmds:
+      - uv sync --dev
+      - npm install --prefix frontend
+
+  backend:dev:
+    desc: FastAPI開発サーバーを起動する
+    cmds:
+      - uv run uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+
+  frontend:dev:
+    desc: Vite開発サーバーを起動する
+    dir: frontend
+    cmds:
+      - npm run dev
+
+  dev:
+    desc: バックエンドとフロントエンドを同時に起動する
+    cmds:
+      - task --parallel backend:dev frontend:dev
+
+  chroma:up:
+    desc: ChromaDBをPython CLIで起動する
+    cmds:
+      - uv run chroma run --path .data/chroma --host localhost --port 8001
+
+  chroma:docker:up:
+    desc: ChromaDBをDocker Composeで起動する
+    cmds:
+      - docker compose up -d chroma
+
+  chroma:docker:down:
+    desc: Docker ComposeのChromaDBを停止する
+    cmds:
+      - docker compose down
+
+  chroma:docker:logs:
+    desc: Docker ComposeのChromaDBログを表示する
+    cmds:
+      - docker compose logs -f chroma
+
+  lint:
+    desc: Pythonコードをruffで検証する
+    cmds:
+      - uv run ruff check backend tests
+      - uv run ruff format --check backend tests
+
+  format:
+    desc: Pythonコードをruffで整形する
+    cmds:
+      - uv run ruff format backend tests
+      - uv run ruff check --fix backend tests
+
+  typecheck:
+    desc: Pythonコードをmypyで型検査する
+    cmds:
+      - uv run mypy backend tests
+
+  test:
+    desc: Pythonテストを実行する
+    cmds:
+      - uv run pytest
+
+  frontend:build:
+    desc: フロントエンドをビルドする
+    dir: frontend
+    cmds:
+      - npm run build
+
+  check:
+    desc: Phase0の検証をまとめて実行する
+    cmds:
+      - task lint
+      - task typecheck
+      - task test
+      - task frontend:build

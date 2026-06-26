@@ -1,0 +1,22 @@
+# OS / editor artifacts
+.DS_Store
+
+# Local environment variables and secrets
+.env
+
+# Python virtual environments and generated caches
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.uv-cache/
+
+# Frontend dependencies and build outputs
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.tsbuildinfo
+
+# Local application data stores, including ChromaDB persistence
+.data/
