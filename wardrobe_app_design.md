@@ -114,6 +114,33 @@ sequenceDiagram
     B-->>U: コーデ提案 + 説明文
 ```
 
+### 3-4. バックエンド設計方針
+
+バックエンドはクリーンアーキテクチャとDDD（ドメイン駆動設計）を設計ルールとして採用します。
+服・コーデ・色・季節・利用シーンなどの業務概念を `domain` に集めます。
+
+| レイヤ | 役割 | 置くもの |
+|---|---|---|
+| `domain` | アプリ固有の業務概念とルール | エンティティ、値オブジェクト、ドメインサービス |
+| `application` | ユースケースの流れを表現 | 登録、一覧取得、コーデ提案などのユースケース、外部I/Oの抽象 |
+| `presentation` | 外部からの入出力を変換 | FastAPIルート、Pydanticスキーマ、HTTPエラー変換 |
+| `infrastructure` | 外部技術の具体実装 | ChromaDB、LLMクライアント、CLIP、画像ストレージ |
+| `core` | アプリケーションの配線 | 設定、依存注入、FastAPIアプリ生成 |
+
+依存方向は `presentation -> application -> domain` を基本とします。
+`infrastructure` は `application` や `domain` が定義した抽象に対する実装を置き、`application` から `infrastructure` へ直接依存させません。
+`core` は各レイヤを組み合わせる配線役として外側の実装を知ってよいですが、`domain` はFastAPI、Pydantic、ChromaDB、LLM SDKなどに依存させません。
+
+DDDは以下を実装時の設計ルールとして守ります。
+
+- `ClothingItem`、`Outfit`、`Season`、`StyleTag` など、コード上の名前をドメイン用語に揃える。
+- 一意性とライフサイクルを持つ服やコーデはエンティティ、色・季節・利用シーンのように値で意味が決まるものは値オブジェクトとして扱う。
+- 集約は整合性を守る境界として扱い、初期の主要集約は `ClothingItem` と `Outfit` を候補にする。
+- 「トップスなしのコーデは作らない」「候補にない服を提案しない」などのドメインルールは `domain` に置く。
+- API入力の形、HTTPステータス、Pydantic固有の制約は `presentation` に閉じ込める。
+- API入出力スキーマ、設定、外部I/Oの検証には Pydantic v2 を使う。`domain` のエンティティ、値オブジェクト、ドメインルールには Pydantic を持ち込まず、通常のclassで表現する。
+- ChromaDBやLLM呼び出しは `infrastructure` に置き、ユースケースからは抽象を通して利用する。
+
 ---
 
 ## 4. 技術選定
@@ -235,24 +262,30 @@ wardrobe-app/
 ├── backend/
 │   ├── app/
 │   │   ├── main.py
-│   │   ├── api/              # ルーティング (items, suggest)
-│   │   ├── services/
-│   │   │   ├── embedding.py  # CLIP
-│   │   │   ├── tagging.py    # Vision 属性抽出
-│   │   │   ├── retrieval.py  # Chroma 検索
-│   │   │   └── outfit.py     # コーデ生成
-│   │   ├── llm/
-│   │   │   ├── base.py       # LLMProvider インターフェース
-│   │   │   ├── gemini.py
-│   │   │   └── ollama.py
-│   │   ├── models/           # Pydantic スキーマ
-│   │   └── db/               # Chroma クライアント
-│   └── requirements.txt
+│   │   ├── domain/           # エンティティ、値オブジェクト、ドメインルール
+│   │   │   ├── item.py
+│   │   │   ├── outfit.py
+│   │   │   └── value_objects.py
+│   │   ├── application/      # ユースケース、外部I/Oの抽象
+│   │   │   ├── register_item.py
+│   │   │   ├── suggest_outfit.py
+│   │   │   └── ports.py
+│   │   ├── presentation/     # FastAPIルート、Pydanticスキーマ
+│   │   │   └── api/
+│   │   │       ├── routes.py
+│   │   │       └── schemas.py
+│   │   ├── infrastructure/   # ChromaDB、LLM、CLIP、画像ストレージ実装
+│   │   │   ├── chroma_item_repository.py
+│   │   │   ├── gemini_llm_client.py
+│   │   │   ├── clip_embedding_service.py
+│   │   │   └── local_image_storage.py
+│   │   └── core/             # 設定、依存注入、アプリ配線
 ├── frontend/
 │   └── src/
 │       ├── components/
 │       ├── pages/
 │       └── api/              # バックエンド呼び出し
+├── pyproject.toml
 └── compose.yaml              # 任意（Chroma 等をまとめる）
 ```
 
