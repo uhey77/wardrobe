@@ -23,8 +23,6 @@ task dev
 
 ## Backend Architecture
 
-バックエンドはクリーンアーキテクチャを意識して、Phase0時点では以下の責務に分けています。
-
 - `backend/app/domain`: フレームワークに依存しないドメインモデル
 - `backend/app/application`: ユースケース
 - `backend/app/presentation`: FastAPIなど外部入出力のアダプタ
