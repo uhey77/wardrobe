@@ -23,10 +23,15 @@ task dev
 
 ## Backend Architecture
 
+バックエンドはクリーンアーキテクチャとDDD（ドメイン駆動設計）を設計ルールとして採用します。
+
 - `backend/app/domain`: フレームワークに依存しないドメインモデル
 - `backend/app/application`: ユースケース
 - `backend/app/presentation`: FastAPIなど外部入出力のアダプタ
+- `backend/app/infrastructure`: DB、ChromaDB、LLM、画像ストレージなど外部技術の実装
 - `backend/app/core`: 設定とアプリケーションの配線
+
+依存方向は `presentation -> application -> domain` を基本とし、外部技術の具体実装は `infrastructure` に置きます。
 
 ## 検証
 
