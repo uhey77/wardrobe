@@ -30,7 +30,7 @@
 
 - ワードローブ管理・コーデ提案アプリです。
 - 設計方針は [wardrobe_app_design.md](wardrobe_app_design.md) を参照してください。
-- Phase0では FastAPI backend、Vite React frontend、ChromaDB 起動、固定レスポンスの疎通を扱います。
+- 初期マイルストーンでは FastAPI backend、Vite React frontend、ChromaDB 起動、固定レスポンスの疎通を扱います。
 - Pythonは `uv`、品質チェックは `ruff` と `mypy`、実行補助は `Taskfile.yml` を使います。
 - フロントエンドは `frontend` 配下の Vite React アプリで、依存管理は `npm` を使います。
 
@@ -79,6 +79,7 @@ Pythonの依存管理と実行には `uv` を使います。ruff、mypy、pytest
 ## 実装ルール
 
 - 既存のディレクトリ構成とレイヤ責務を優先してください。
+- コード、API、UI、テスト名にはロードマップ上の段階名や段階番号を使わず、`service_status` や `item_registration` など機能名・ドメイン名を使ってください。
 - ドメインモデルにFastAPI、Pydantic、DBクライアントなど外部技術の詳細を持ち込まないでください。
 - API入出力用のPydanticスキーマは `presentation` 配下に置いてください。
 - 新しいユースケースは `application` 配下に作り、APIルートから直接ビジネスロジックを書かないでください。
