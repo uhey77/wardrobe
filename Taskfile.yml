@@ -49,24 +49,24 @@ tasks:
   lint:
     desc: Pythonコードをruffで検証する
     cmds:
-      - uv run ruff check backend tests
-      - uv run ruff format --check backend tests
+      - uv run ruff check backend
+      - uv run ruff format --check backend
 
   format:
     desc: Pythonコードをruffで整形する
     cmds:
-      - uv run ruff format backend tests
-      - uv run ruff check --fix backend tests
+      - uv run ruff format backend
+      - uv run ruff check --fix backend
 
   typecheck:
     desc: Pythonコードをmypyで型検査する
     cmds:
-      - uv run mypy backend tests
+      - uv run mypy backend
 
   test:
     desc: Pythonテストを実行する
     cmds:
-      - uv run pytest
+      - uv run pytest backend/tests
 
   frontend:build:
     desc: フロントエンドをビルドする
@@ -75,7 +75,7 @@ tasks:
       - npm run build
 
   check:
-    desc: Phase0の検証をまとめて実行する
+    desc: 全体の検証をまとめて実行する
     cmds:
       - task lint
       - task typecheck
