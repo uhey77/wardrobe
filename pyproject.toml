@@ -21,7 +21,7 @@ dev = [
 
 [tool.ruff]
 line-length = 100
-src = ["backend", "tests"]
+src = ["backend"]
 target-version = "py312"
 
 [tool.ruff.lint]
@@ -41,7 +41,8 @@ python_version = "3.12"
 strict = true
 warn_unreachable = true
 pretty = true
-files = ["backend", "tests"]
+files = ["backend"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+testpaths = ["backend/tests"]
