@@ -76,6 +76,11 @@ DDDは以下を実装時の設計ルールとして守ります。
 
 Pythonの依存管理と実行には `uv` を使います。ruff、mypy、pytestはTaskfile経由で実行してください。
 
+## テスト配置
+
+- Backendのテストは `backend/tests` に置いてください。
+- Frontendのテストは `frontend/tests` に置いてください。
+
 ## 実装ルール
 
 - 既存のディレクトリ構成とレイヤ責務を優先してください。
