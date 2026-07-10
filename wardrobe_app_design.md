@@ -51,28 +51,41 @@ CLIP（検索）と LLM（理解・生成）が別の役割を担うのがポイ
 
 ### 3-1. システム全体構成
 ```mermaid
-graph TB
+%%{init: {"flowchart": {"curve": "linear"}} }%%
+flowchart LR
     User[ユーザー] --> FE[React Frontend]
-    FE -->|画像アップロード / クエリ| API[FastAPI Backend]
+    FE -->|画像アップロード / クエリ| API[FastAPI API]
 
     subgraph Backend[FastAPI Backend]
-        API --> EMB[CLIP 埋め込み生成]
-        API --> TAG[Vision 属性抽出]
-        API --> RET[検索: ベクトル + メタデータ]
-        API --> GEN[コーデ生成]
+        direction LR
+        API --> Presentation[presentation<br/>routes / schemas]
+        Presentation --> Application[application<br/>use cases / ports]
+        Application --> Domain[domain<br/>ClothingItem / Outfit]
     end
 
-    subgraph LLM_Layer[LLM 抽象化層]
-        TAG -.-> PROVIDER{LLM Provider}
-        GEN -.-> PROVIDER
-        PROVIDER -.-> GEMINI[Gemini API]
-        PROVIDER -.-> OLLAMA[ローカル LLM / Ollama]
+    subgraph Infrastructure[infrastructure]
+        direction TB
+        ImageStorage[画像ストレージ]
+        AttributeExtractor[Vision 属性抽出]
+        EmbeddingProvider[CLIP 埋め込み生成]
+        VectorRepository[検索: ベクトル + メタデータ]
+        OutfitGenerator[コーデ生成]
     end
 
-    EMB --> VDB[(ChromaDB)]
-    RET --> VDB
-    TAG --> VDB
-    API --> STORE[(画像ストレージ)]
+    Application --> ImageStorage
+    Application --> AttributeExtractor
+    Application --> EmbeddingProvider
+    Application --> VectorRepository
+    Application --> OutfitGenerator
+
+    ImageStorage --> STORE[(画像ストレージ)]
+    EmbeddingProvider --> VDB[(ChromaDB)]
+    VectorRepository --> VDB
+
+    AttributeExtractor --> Provider[LLM Provider]
+    OutfitGenerator --> Provider
+    Provider --> Gemini[Gemini API]
+    Provider --> Ollama[ローカル LLM / Ollama]
 ```
 
 ### 3-2. 服の登録フロー
