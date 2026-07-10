@@ -1,5 +1,9 @@
 """Application services for clothing item workflows."""
 
+from backend.app.application.clothing_items.dtos import (
+    StoredImageLocation,
+    StoredImageMeta,
+)
 from backend.app.application.clothing_items.errors import (
     ClothingItemNotFoundError,
     InvalidImageError,
@@ -8,10 +12,6 @@ from backend.app.application.clothing_items.errors import (
     VectorSyncError,
 )
 from backend.app.application.clothing_items.inputs import RegisterClothingItemInput
-from backend.app.application.clothing_items.dtos import (
-    StoredImageLocation,
-    StoredImageMeta,
-)
 from backend.app.application.clothing_items.ports import (
     ClothingAttributeExtractor,
     ClothingItemRepository,

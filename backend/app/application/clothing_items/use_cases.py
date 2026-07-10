@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
+from backend.app.application.clothing_items.dtos import StoredImageLocation
 from backend.app.application.clothing_items.errors import (
     ClothingItemNotFoundError,
     InvalidImageError,
@@ -15,7 +16,6 @@ from backend.app.application.clothing_items.ports import (
     ImageStorage,
     ItemVectorRepository,
 )
-from backend.app.application.clothing_items.dtos import StoredImageLocation
 from backend.app.application.clothing_items.results import RegistrationResult
 from backend.app.domain.item import ClothingItem
 

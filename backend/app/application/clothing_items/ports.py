@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 
-from backend.app.domain.item import ClothingAttributes, ClothingItem
-
 from backend.app.application.clothing_items.dtos import (
     StoredImageLocation,
     StoredImageMeta,
 )
+from backend.app.domain.item import ClothingAttributes, ClothingItem
 
 
 class ImageStorage(ABC):
