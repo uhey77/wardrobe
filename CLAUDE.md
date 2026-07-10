@@ -89,6 +89,10 @@ Pythonの依存管理と実行には `uv` を使います。ruff、mypy、pytest
 - API入出力用のPydanticスキーマは `presentation` 配下に置いてください。
 - 新しいユースケースは `application` 配下に作り、APIルートから直接ビジネスロジックを書かないでください。
 - ChromaDB、LLM、画像ストレージ、CLIPなどの具体実装は `infrastructure` 配下に置いてください。
+- SDKクライアント、MLモデル、永続化アダプタなどの長寿命依存は `core` のcomposition rootで起動時に一度だけ生成し、終了時に必要な解放処理を行ってください。
+- 画像アップロードのサイズ上限は、リクエスト全体を `bytes` 化する前に `Content-Length` とストリーム読込量の両方で検証してください。
+- Sentence Transformersで画像モデルを使う場合は `sentence-transformers[image]` を依存に含め、実モデルを使わないテストでもextra解決を確認してください。
+- embedding方式・モデル・前処理を変更する場合はChromaDBのコレクション名をversioningし、保存済みアイテムの再インデックス手順と検証結果を明記してください。
 - 生成物、キャッシュ、ローカルデータはコミット対象にしないでください。
 - Pythonは3.12以上を前提とし、型ヒントは `list[str]` や `dict[str, int]` などの built-in generics を使ってください。
 - Pythonの `dataclasses.dataclass` / `@dataclass` は使用しないでください。
